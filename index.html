@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calculadora de Dosis Médica</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    form, .registro {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: 0 auto 20px auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Calculadora de Dosis para Niños</h1>
+
+<form id="formulario" onsubmit="return calcularDosis()">
+  <label>Nombre del paciente</label>
+  <input type="text" id="nombre" required>
+
+  <label>Edad (años)</label>
+  <input type="number" id="edad" required>
+
+  <label>Peso (kg)</label>
+  <input type="number" id="peso" step="0.1" required>
+
+  <label>Medicamento</label>
+  <select id="medicamento" required>
+    <option value="">Seleccione uno</option>
+    <option value="Amoxicilina">Amoxicilina</option>
+    <option value="Amoxicilina-Clavulánico">Amoxicilina-Clavulánico</option>
+    <option value="Cefalexina">Cefalexina</option>
+    <option value="Gentamicina">Gentamicina</option>
+    <option value="Vancomicina">Vancomicina</option>
+    <option value="Azitromicina">Azitromicina</option>
+    <option value="Metronidazol">Metronidazol</option>
+    <option value="Ceftriaxona">Ceftriaxona</option>
+  </select>
+
+  <button type="submit">Calcular dosis</button>
+</form>
+
+<div class="registro">
+  <h2>Pacientes registrados</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Edad</th>
+        <th>Peso</th>
+        <th>Medicamento</th>
+        <th>Dosis Total (mg/día)</th>
+        <th>Tomas</th>
+      </tr>
+    </thead>
+    <tbody id="tablaPacientes"></tbody>
+  </table>
+</div>
+
+<script>
+  const medicamentos = {
+    "Amoxicilina":       { min: 25, max: 50, tomas: 3 },
+    "Amoxicilina-Clavulánico": { min: 25, max: 45, tomas: 3 },
+    "Cefalexina":        { min: 25, max: 50, tomas: 2 },
+    "Gentamicina":       { min: 5,  max: 7,  tomas: 1 },
+    "Vancomicina":       { min: 15, max: 15, tomas: 3 },
+    "Azitromicina":      { min: 10, max: 10, tomas: 1 },
+    "Metronidazol":      { min: 20, max: 40, tomas: 3 },
+    "Ceftriaxona":       { min: 50, max: 75, tomas: 1 }
+  };
+
+  function calcularDosis() {
+    const nombre = document.getElementById("nombre").value.trim();
+    const edad = parseInt(document.getElementById("edad").value);
+    const peso = parseFloat(document.getElementById("peso").value);
+    const medicamento = document.getElementById("medicamento").value;
+
+    if (!nombre || isNaN(edad) || isNaN(peso) || !medicamento) {
+      alert("Por favor complete todos los campos.");
+      return false;
+    }
+
+    const med = medicamentos[medicamento];
+    const dosisMin = peso * med.min;
+    const dosisMax = peso * med.max;
+    const tomas = med.tomas;
+
+    const textoDosis = med.min === med.max
+      ? `${dosisMin.toFixed(2)}`
+      : `${dosisMin.toFixed(2)} - ${dosisMax.toFixed(2)}`;
+
+    const fila = `
+      <tr>
+        <td>${nombre}</td>
+        <td>${edad}</td>
+        <td>${peso.toFixed(1)} kg</td>
+        <td>${medicamento}</td>
+        <td>${textoDosis} mg/día</td>
+        <td>${tomas} tomas</td>
+      </tr>
+    `;
+
+    document.getElementById("tablaPacientes").innerHTML += fila;
+    document.getElementById("formulario").reset();
+    return false;
+  }
+</script>
+
+</body>
+</html>
